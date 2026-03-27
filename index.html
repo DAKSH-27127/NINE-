@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monark Clothing | Premium Streetwear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
+        .product-card:hover { transform: translateY(-5px); transition: 0.3s; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold tracking-tighter text-black">NINE<span class="text-yellow-600">.</span></h1>
+            <div class="hidden md:flex space-x-8 font-medium">
+                <button onclick="filterProducts('all')" class="hover:text-yellow-600">All</button>
+                <button onclick="filterProducts('Upper')" class="hover:text-yellow-600">Upper</button>
+                <button onclick="filterProducts('Lower')" class="hover:text-yellow-600">Lower</button>
+                <button onclick="filterProducts('Accessories')" class="hover:text-yellow-600">Accessories</button>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative cursor-pointer" onclick="toggleCart()">
+                    <span>🛒</span>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full px-1.5">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-black text-white py-20 text-center">
+        <h2 class="text-5xl font-extrabold mb-4">RULE THE STREETS</h2>
+        <p class="text-gray-400 mb-8">Premium Collection for the Modern Monark.</p>
+        <a href="#shop" class="bg-white text-black px-8 py-3 font-bold hover:bg-yellow-600 transition">SHOP NOW</a>
+    </header>
+
+    <section id="shop" class="container mx-auto px-6 py-12">
+        <h3 class="text-2xl font-bold mb-8 border-b-2 border-black inline-block">Featured Collection</h3>
+        
+        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            </div>
+    </section>
+
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[60] p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h4 class="text-xl font-bold">Your Cart</h4>
+            <button onclick="toggleCart()" class="text-2xl">&times;</button>
+        </div>
+        <div id="cart-items" class="space-y-4 overflow-y-auto h-3/4"></div>
+        <div class="border-t mt-4 pt-4">
+            <p class="flex justify-between font-bold text-lg">Total: <span id="cart-total">₹0</span></p>
+            <button onclick="alert('Checkout system integration coming soon!')" class="w-full bg-black text-white py-3 mt-4 hover:bg-yellow-600">CHECKOUT</button>
+        </div>
+    </div>
+
+    <footer class="bg-gray-100 py-10 text-center text-sm text-gray-500 mt-20">
+        &copy; 2026 Monark Clothing Co. All Rights Reserved.
+    </footer>
+
+    <script>
+        const products = [
+            { id: 1, name: "Monark Signature Hoodie", price: 2499, cat: "Upper", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400" },
+            { id: 2, name: "Obsidian Cargo Pants", price: 1899, cat: "Lower", img: "https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=400" },
+            { id: 3, name: "Vintage Oversized Tee", price: 999, cat: "Upper", img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400" },
+            { id: 4, name: "Monark Gold Chain", price: 1299, cat: "Accessories", img: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400" },
+            { id: 5, name: "Midnight Denim Jacket", price: 3200, cat: "Upper", img: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400" },
+            { id: 6, name: "Tech-Wear Joggers", price: 2100, cat: "Lower", img: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400" },
+            { id: 7, name: "Suede Chelsea Boots", price: 4500, cat: "Accessories", img: "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=400" },
+            { id: 8, name: "Polo Monark Edition", price: 1499, cat: "Upper", img: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=400" },
+            { id: 9, name: "Slim-Fit Chinos", price: 1700, cat: "Lower", img: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400" },
+            { id: 10, name: "Aviator Shades", price: 899, cat: "Accessories", img: "https://images.unsplash.com/photo-1511499767390-90342f568952?w=400" }
+        ];
+
+        let cart = [];
+
+        function displayProducts(items) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = items.map(p => `
+                <div class="product-card bg-white p-4 rounded-lg shadow-sm border">
+                    <img src="${p.img}" class="w-full h-64 object-cover rounded mb-4" alt="${p.name}">
+                    <p class="text-xs text-yellow-600 font-bold uppercase">${p.cat}</p>
+                    <h4 class="font-semibold text-lg">${p.name}</h4>
+                    <p class="text-gray-600 mb-4">₹${p.price}</p>
+                    <button onclick="addToCart(${p.id})" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">Add to Cart</button>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts(category) {
+            if(category === 'all') displayProducts(products);
+            else displayProducts(products.filter(p => p.cat === category));
+        }
+
+        function addToCart(id) {
+            const item = products.find(p => p.id === id);
+            cart.push(item);
+            updateCart();
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = cart.map((item, index) => `
+                <div class="flex justify-between items-center border-b pb-2">
+                    <div>
+                        <p class="font-bold text-sm">${item.name}</p>
+                        <p class="text-gray-500 text-xs">₹${item.price}</p>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-red-500 font-bold">X</button>
+                </div>
+            `).join('');
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cart-total').innerText = '₹' + total;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            sidebar.classList.toggle('translate-x-full');
+        }
+
+        // Initial Load
+        displayProducts(products);
+    </script>
+</body>
+</html>
